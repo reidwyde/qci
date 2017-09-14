@@ -1,89 +1,77 @@
-cd ~
+#!/bin/bash
 
-set -e
+# QCI install script blah blah blah
 
-sudo apt-get -y install python3-pip
-if [ ! $? = 0 ]; then
-echo "python3 failed to install"
+
+installed()
+{
+	return `dpkg -s $1 >/dev/null 2>&1`
+}
+
+checked()
+{
+	"$@"
+	ERR=$?
+	if [ $ERR -ne 0 ]; then
+		echo "Error: $ERR"
+		exit $ERR
+	fi
+}
+
+if [ $# -ne 1 ]; then
+	echo "QCI Install must be provided an API key as a parameter!"
 fi
 
-pip3 install IBMQuantumExperience
-if [ ! $? = 0 ]; then
-echo "IBMQuantumExperience failed to install"
+if ! [ $(basename `pwd`) = "qci" ]; then
+	echo "Script must be run in git download directory as ./$0"
 fi
+
+if ! installed python3; then
+	 sudo apt-get install -y python3
+fi
+
+echo "Python3 installed"
+
+if ! installed python3-pip; then
+	 sudo apt-get install -y python3-pip
+fi
+echo "Pip installed"
+
+if ! installed wget; then
+	sudo apt-get install -y wget
+fi
+echo "wget installed"
+
+checked sudo -H pip3 install --upgrade pip
+echo "Pip upgraded"
 
 pip3 install qiskit
-if [ ! $? = 0 ]; then
-echo "qiskit failed to install"
+echo "QISkit installed"
+
+sudo -H pip3 install jupyter
+echo "Jupyter installed"
+
+wget http://github.com/QISkit/qiskit-tutorial/archive/master.zip
+echo "Samples downloaded"
+
+
+unzip master.zip
+
+if ! [ -d qiskit-tutorial-master ]; then
+	echo "Problem installing!"
+	exit 1
 fi
 
-pip3 install matplotlib
-if [ ! $? = 0 ]; then
-echo "matplotlib failed to install"
+./set-api-key.sh $1
+if [ $? -ne 0 ]; then
+	echo "Unable to set API key, quantum notebook won't work!"
+	echo "Try running ./set-api-key.sh"
 fi
+echo "#######################################"
+echo "# QISkit lite installed successfully! #"
+echo "#######################################"
 
-pip3 install numpy
-if [ ! $? = 0 ]; then
-echo "numpy failed to install"
-fi
-
-
-
-if [ ! -d QCI ] && [ -e QCI ]; then
-echo "Unexpected file named QCI in home directory! Cannot install!"
-exit 1
-elif [ ! -d QCI ]; then
-mkdir QCI
-fi
-
-pip3 install iPython
-
-if [ ! $? = 0 ]; then
-echo "install of iPython failed" 
-exit 1
-fi 
-
-pip3 install jupyter
-
-if [ ! $? = 0 ]; then
-echo "install of jupyter failed" 
-exit 1
-fi 
-
-
-cd QCI
-echo "Welcome to QCI" > WelcomeToQCI.txt
-
-
-mkdir IBMQuantumExperienceDeveloperSDK
-
-cd IBMQuantumExperienceDeveloperSDK
-
-git clone https://github.com/IBM/qiskit-sdk-py.git
-cd qiskit-sdk-py
-
-if [ ! $? = 0 ]; then
-echo "git clone IBMQuantumExperienceSDK failed" 
-exit 1
-fi 
-
-cd ~/QCI
-
-mkdir IBMQuantumExperienceTutorials
-cd IBMQuantumExperienceTutorials
-
-git clone https://github.com/QISKit/qiskit-tutorial
-
-cd qiskit-tutorial
-
-jupyter notebook --allow-root
-
-if [ ! $? = 0 ]; then
-echo "jupyter notebook launch failed" 
-exit 1
-fi 
-
-
-
+cd qiskit-tutorial-master
+jupyter notebook
 
 
