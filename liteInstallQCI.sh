@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# QCI install script blah blah blah
+# QCI install by Reid Wyde and Alex Dexter
 
 
 installed()
