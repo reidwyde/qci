@@ -25,11 +25,17 @@ RUNNING THE INSTALLATION
 IBM QX provides a Python wrapper API for running computations on their quantum computers based in New York. Our script installs the necessary package dependencies and Quantum Information Science toolkit that IBM has created. 
 
 Quick Instructions:
+
 sudo apt-get update
+
 sudo apt-get install
+
 sudo apt-get install git
+
 (set up your git credentials)
+
 git clone https://github.com/qci-austin/scripts.git
+
 sudo -H ./liteInstallQCI.sh <API token>
 
 Detailed Instructions:
